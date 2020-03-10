@@ -29,6 +29,9 @@ namespace Cw1
             var url = "https://www.pja.edu.pl";
             var httpClient = new HttpClient();
 
+            if (args.Length < 1) throw new ArgumentNullException(); 
+//            
+
             var response = await httpClient.GetAsync(url);
 
             //2xx
@@ -36,17 +39,42 @@ namespace Cw1
             {
                 var htmlContent = await response.Content.ReadAsStringAsync();
 
-                var regex = new Regex("[a-z]+[a-z0-9]*@[a-z0-9]+\\.[a-z]+",RegexOptions.IgnoreCase);
+                var regex = new Regex("[a-z]+[a-z0-9]*@[a-z0-9]+\\.[a-z]+", RegexOptions.IgnoreCase);
 
                 var matches = regex.Matches(htmlContent);
 
+                int czyPojawilosie = 0;
+
+                string[] tab = new string[10];
+                int ktoryStr = 0;
+
                 foreach (var match in matches)
                 {
-
-                    Console.WriteLine(match.ToString());
+                    int powtorzenie = 0;
+                    for (int i = 0; i < tab.Length; i++)
+                    {
+                        if (tab[i].Equals(match)) powtorzenie++;
+                    }
+                    
+                    if(powtorzenie != 0)  tab[ktoryStr++] = match.ToString();
+                    
+                   // Console.WriteLine(match.ToString());
+                    czyPojawilosie++;
+                }
+                for (int i = 0; i < ktoryStr; i++)
+                {
+                    Console.WriteLine(tab[i]);
                 }
 
+
+                if (czyPojawilosie == 0) throw new Exception("nie znaleziono adresow email");
+
+                httpClient.Dispose();
+
             }
+            else throw new Exception("Błąd w trakcie pobierania strony");
+            
+
         }
     }
 }
